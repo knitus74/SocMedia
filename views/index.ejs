@@ -3,21 +3,26 @@
   <head>
     <meta charset="UTF-8">
     <title>SockMedia</title>
-  </head>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous"/>
+    <link rel = "stylesheet" href = "css/index.css">
   <body>
-  	<h1>Hello there <%= username %>!</h1>
-
-  	<form method = "POST" action = "/postcomment">
-  		<textarea rows="4" cols="50" name = "comment">
-		  </textarea>
-		  <button type = "submit">Submit</button>
-	  </form>
-
+      <nav class = "navbar navbar-light bg-light sticky-top navbar-expand-sm mb-4">
+        <div class = "mr-auto">
+          <a class="navbar-brand">SockMedia</a>
+          <form class="form-inline my-2 my-lg-0">
+              <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+              <button class="btn btn-outline-success" type="submit">Search</button>
+          </form>
+        </div>
+        <div class = "ml-auto">
+          <span class = "navbar-text">Welcome back <%= username %>!</span>
+          <a href = "/logout"><button type="button" class="btn btn-outline-primary">Logout</button></a>
+        </div>
+      </nav>
     <div id="commentstream"></div>
 
     <script src="https://unpkg.com/react@16/umd/react.development.js" crossorigin></script>
     <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js" crossorigin></script>
-    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
     <script src="index.js" type="text/javascript" > </script>
   </body>
 </html>

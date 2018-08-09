@@ -1,0 +1,23 @@
+
+
+.grow-post-comment {
+	animation-name: grow;
+	animation-fill-mode: forwards;
+	animation-duration: 0.5s;
+}
+
+.shrink-post-comment {
+	animation-name: shrink;
+	animation-fill-mode: forwards;
+	animation-duration: 0.5s;
+}
+
+@keyframes grow {
+	0% {height: 3em;}
+	100% {height: 15em;}
+}
+
+@keyframes shrink {
+	0% {height: 15em;}
+	100% {height: 3em;}
+}

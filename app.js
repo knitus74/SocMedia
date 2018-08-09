@@ -43,7 +43,7 @@ app.use(passport.session());
 passport.use(new LocalStrategy(
 	(username, password, done) => {
 		const db = require('./db.js');
-		db.query("SELECT password FROM users WHERE username = ?", [username], function(error, results, fields){
+		db.query("SELECT password, userid FROM users WHERE username = ?", [username], function(error, results, fields){
 			if(error){done(error);}
 			console.log("gets here");
 			if(results.length == 0){done(null, false);}
@@ -52,7 +52,8 @@ passport.use(new LocalStrategy(
 				bcrypt.compare(password, hash, (err, response) => {
 					if(response){
 						//change
-						return done(null, {userid: username});
+						let userid = results[0].userid;
+						return done(null, {userid: userid, username: username});
 					}
 					else{
 						return done(null, false);
@@ -74,10 +75,7 @@ app.post("/login", passport.authenticate('local',
 ));
 
 app.get("/", authenticationMiddleware(), function(req, res){
-	res.render("index.ejs", {username: req.user.userid});
-	console.log(req.user);
-	console.log('Cookies: ', req.cookies);
-  	console.log('Signed Cookies: ', req.signedCookies);
+	res.render("index.ejs", {username: req.user.username});
 });
 
 app.get("/register", function(req, res){
@@ -113,8 +111,12 @@ app.post("/postcomment", (req, res) => {
 	let userid = req.user.userid;
 	let comment = req.body.comment;
 	db.query('INSERT INTO comments(comment, userid) VALUES (?,?)', [comment, userid], function(error, results, fields){
-		if(error) throw error;
-		res.redirect("/");
+		if (error) throw error;
+		db.query('SELECT LAST_INSERT_ID() as comment_id', function(error, results, fields){
+			if (error) throw error;
+			let commentid = results[0].comment_id;
+			res.send(JSON.stringify({comment_id: commentid}));
+		})
 	});
 });
 
@@ -137,14 +139,23 @@ app.get("/getcomments", (req, res) => {
 	let userid = req.user.userid;
 	db.query("SELECT commentid, comment FROM comments WHERE userid = ?", [userid], function(error, results, fields){
 		if(error) throw error;
-		console.log(results);
 		let json = JSON.stringify(results);
 		res.send(json);
-	})
+	});
 	//var comments = [{comment: "hello there idiot sandwich"}];
 	//let json = JSON.stringify(results);
-})
+});
 
+//find a profile, may need to change this if usernames are not unique
+
+app.get("/profiles/:username", (req, res) => {
+	var username = req.params.username;
+	db.query("SELECT comment FROM comments INNER JOIN users ON comments.userid = users.userid WHERE username = ?", [username], function(error, results, fields){
+		if(error) throw error;
+		console.log(results);
+		res.render('profile.ejs', {username: username, comments: results});
+	});
+});
 
 
 passport.serializeUser(function(userid, done){
